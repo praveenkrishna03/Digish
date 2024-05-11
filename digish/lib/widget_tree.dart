@@ -1,3 +1,6 @@
+import 'package:digish/auth/auth.dart';
+import 'package:digish/main.dart';
+import 'package:digish/pages/login.dart';
 import 'package:flutter/material.dart';
 
 class WidgetTree extends StatefulWidget {
@@ -5,10 +8,18 @@ class WidgetTree extends StatefulWidget {
   State<WidgetTree> createState() => _WidgetTreeState();
 }
 
-class _WidgetTreState extends State<WidgetTree>{
+class _WidgetTreeState extends State<WidgetTree> {
   @override
-  Widget build(BuildContext context){
-    return StreamBuilder(stream: stream, builder: builder)
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: auth().authStateChanges,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return WidgetTree();
+        } else {
+          return Login();
+        }
+      },
+    );
   }
-
 }

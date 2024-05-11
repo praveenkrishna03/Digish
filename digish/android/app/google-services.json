@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "886102684087",
+    "project_id": "digish-db74b",
+    "storage_bucket": "digish-db74b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886102684087:android:a86692d0808836ae263832",
+        "android_client_info": {
+          "package_name": "com.example.digish"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAYMq7AHGmblSXx2_gokbMdi-OEozsIV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
