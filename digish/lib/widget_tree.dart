@@ -1,6 +1,8 @@
 import 'package:digish/auth/auth.dart';
 import 'package:digish/main.dart';
+import 'package:digish/pages/home.dart';
 import 'package:digish/pages/login.dart';
+import 'package:digish/pages/signup.dart';
 import 'package:flutter/material.dart';
 
 class WidgetTree extends StatefulWidget {
@@ -15,7 +17,7 @@ class _WidgetTreeState extends State<WidgetTree> {
       stream: auth().authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return WidgetTree();
+          return home();
         } else {
           return Login();
         }

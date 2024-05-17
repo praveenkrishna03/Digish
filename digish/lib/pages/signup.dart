@@ -1,26 +1,48 @@
+import 'package:digish/UserModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:digish/pages/signup.dart';
+import 'package:digish/pages/login.dart';
+import 'package:flutter/widgets.dart';
 
-class Login extends StatefulWidget {
+class Signup extends StatefulWidget {
   @override
-  Login_state createState() => Login_state();
+  Signup_state createState() => Signup_state();
 }
 
-class Login_state extends State<Login> {
+class Signup_state extends State<Signup> {
+  TextEditingController _nameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _confirmPasswordController = TextEditingController();
+  bool isLoading = false;
 
-  Future signInWithEmailAndPassword() async {
+  Future createUserWithEmailAndPassword() async {
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text, password: _passwordController.text);
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Registeration succesful, go to Login page')),
+      );
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+      if (e.code == 'weak-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('The password provided is too weak.')),
+        );
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('The account already exists for that email.')),
+        );
+        print('The account already exists for that email.');
       }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -38,7 +60,37 @@ class Login_state extends State<Login> {
             ),
             Positioned(
               left: (MediaQuery.of(context).size.width - 300) / 2,
-              top: 427,
+              top: 425,
+              child: Container(
+                width: 300,
+                height: 40,
+                decoration: ShapeDecoration(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(17),
+                  ),
+                ),
+                child: TextFormField(
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  cursorColor: Colors.black,
+                  controller: _nameController,
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(
+                      color: Color.fromARGB(255, 109, 109, 109),
+                    ),
+                    hintText: 'Enter your name',
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: (MediaQuery.of(context).size.width - 300) / 2,
+              top: 500,
               child: Container(
                 width: 300,
                 height: 40,
@@ -68,7 +120,7 @@ class Login_state extends State<Login> {
             ),
             Positioned(
               left: (MediaQuery.of(context).size.width - 300) / 2,
-              top: 500,
+              top: 575,
               child: Container(
                 width: 300,
                 height: 40,
@@ -92,14 +144,45 @@ class Login_state extends State<Login> {
                     hintStyle: TextStyle(
                       color: Color.fromARGB(255, 109, 109, 109),
                     ),
-                    hintText: 'Enter your Password',
+                    hintText: 'Create password',
                   ),
                 ),
               ),
             ),
             Positioned(
               left: (MediaQuery.of(context).size.width - 300) / 2,
-              top: 550,
+              top: 650,
+              child: Container(
+                width: 300,
+                height: 40,
+                decoration: ShapeDecoration(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(17),
+                  ),
+                ),
+                child: TextFormField(
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  cursorColor: Colors.black,
+                  controller: _confirmPasswordController,
+                  keyboardType: TextInputType.name,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(
+                      color: Color.fromARGB(255, 109, 109, 109),
+                    ),
+                    hintText: 'Confirm password',
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: (MediaQuery.of(context).size.width - 300) / 2,
+              top: 700,
               child: Container(
                   height: 20,
                   width: 300,
@@ -107,7 +190,7 @@ class Login_state extends State<Login> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Don't have an account?  ",
+                        "Already have an account?  ",
                         style: TextStyle(fontSize: 12),
                       ),
                       ElevatedButton(
@@ -120,15 +203,15 @@ class Login_state extends State<Login> {
                               Size(80, 40), // Width and height of the button
                         ),
                         onPressed: () {
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Signup(),
+                              builder: (context) => Login(),
                             ),
                           );
                         },
                         child: Text(
-                          'Create one',
+                          'Login',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.green.shade900,
@@ -143,20 +226,35 @@ class Login_state extends State<Login> {
             ),
             Positioned(
               left: (MediaQuery.of(context).size.width - 150) / 2,
-              top: 600,
+              top: 725,
               child: SizedBox(
                 width: 150,
                 height: 40,
                 child: ElevatedButton(
                   onPressed: () {
                     // Add your login logic here
-                    String email = _emailController.text;
+                    String c_password = _confirmPasswordController.text;
+
                     String password = _passwordController.text;
-                    signInWithEmailAndPassword();
+                    if (password.isEmpty || c_password.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('password field is empty')),
+                      );
+                      // Show error message or snackbar indicating that both password and confirm password are required
+                    } else if (password != c_password) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("password doesn't match")),
+                      );
+                      // Show error message or snackbar indicating that passwords don't match
+                    } else {
+                      createUserWithEmailAndPassword();
+                    }
+
                     // Do something with email and password
                   },
                   child: Text(
-                    'Login',
+                    'Signup',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -166,7 +264,7 @@ class Login_state extends State<Login> {
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
