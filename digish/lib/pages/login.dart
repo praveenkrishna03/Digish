@@ -1,6 +1,8 @@
+import 'package:digish/pages/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:digish/pages/signup.dart';
+import 'package:get/get.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -10,16 +12,38 @@ class Login extends StatefulWidget {
 class Login_state extends State<Login> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  bool isLoading = false;
 
   Future signInWithEmailAndPassword() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text, password: _passwordController.text);
+      setState(() {
+        isLoading = false;
+      });
     } on FirebaseAuthException catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        return ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('user not found')),
+        );
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        return ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('wrong password')),
+        );
+      } else if (e.code == 'invalid-email') {
+        return ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('invalid email format')),
+        );
+      } else {
+        return ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please the credentials')),
+        );
       }
     }
   }
@@ -120,12 +144,8 @@ class Login_state extends State<Login> {
                               Size(80, 40), // Width and height of the button
                         ),
                         onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Signup(),
-                            ),
-                          );
+                          Get.offAll(() => Signup(),
+                              transition: Transition.fadeIn);
                         },
                         child: Text(
                           'Create one',
@@ -150,20 +170,23 @@ class Login_state extends State<Login> {
                 child: ElevatedButton(
                   onPressed: () {
                     // Add your login logic here
-                    String email = _emailController.text;
-                    String password = _passwordController.text;
                     signInWithEmailAndPassword();
                     // Do something with email and password
                   },
-                  child: Text(
-                    'Login',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontFamily: 'Inconsolata',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
+                  child: isLoading
+                      ? Center(
+                          child: CircularProgressIndicator(
+                          color: Colors.black,
+                        ))
+                      : Text(
+                          'Login',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontFamily: 'Inconsolata',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                 ),
               ),
             )

@@ -4,6 +4,7 @@ import 'package:digish/widget_tree.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:digish/constants.dart';
 import 'package:digish/auth/auth.dart';
+import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,15 +15,15 @@ void main() async {
     messagingSenderId: Constants.messagingSenderId,
     projectId: Constants.projectId,
   ));
-  runApp(Digish());
+  runApp(const Digish());
 }
 
 class Digish extends StatelessWidget {
-  Digish({super.key});
+  const Digish({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       home: WidgetTree(),
       routes: {},
     );

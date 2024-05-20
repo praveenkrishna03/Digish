@@ -1,9 +1,11 @@
 import 'package:digish/UserModel.dart';
+import 'package:digish/widget_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:digish/pages/login.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 
 class Signup extends StatefulWidget {
   @override
@@ -19,14 +21,23 @@ class Signup_state extends State<Signup> {
 
   Future createUserWithEmailAndPassword() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       final credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
+      final user = FirebaseAuth.instance.currentUser;
+      await user?.updateDisplayName(_nameController.text);
+      await user?.updatePhotoURL(
+          "https://firebasestorage.googleapis.com/v0/b/digish-db74b.appspot.com/o/3177440.png?alt=media&token=140cda74-ce4c-4e28-8e6d-403c6d2660a2");
+      setState(() {
+        isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Registeration succesful, go to Login page')),
+        const SnackBar(content: Text('Registration successful')),
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -203,12 +214,8 @@ class Signup_state extends State<Signup> {
                               Size(80, 40), // Width and height of the button
                         ),
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Login(),
-                            ),
-                          );
+                          Get.offAll(() => Login(),
+                              transition: Transition.fadeIn);
                         },
                         child: Text(
                           'Login',
@@ -249,19 +256,26 @@ class Signup_state extends State<Signup> {
                       // Show error message or snackbar indicating that passwords don't match
                     } else {
                       createUserWithEmailAndPassword();
+                      Get.offAll(() => WidgetTree(),
+                          transition: Transition.fade);
                     }
 
                     // Do something with email and password
                   },
-                  child: Text(
-                    'Signup',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontFamily: 'Inconsolata',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
+                  child: isLoading
+                      ? Center(
+                          child: CircularProgressIndicator(
+                          color: Colors.black,
+                        ))
+                      : Text(
+                          'Signup',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontFamily: 'Inconsolata',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                 ),
               ),
             ),
