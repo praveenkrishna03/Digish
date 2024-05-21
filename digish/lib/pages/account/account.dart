@@ -1,5 +1,6 @@
 import 'package:digish/main.dart';
 import 'package:digish/pages/account/about_us.dart';
+import 'package:digish/pages/account/my_orders.dart';
 import 'package:digish/pages/account/payment_opt.dart';
 import 'package:digish/pages/account/receive_opt.dart';
 import 'package:digish/pages/account/terms.dart';
@@ -181,6 +182,17 @@ class Account_state extends State<Account> {
           } else {
             showEmailNotVerified();
           }
+        }
+      },
+      {
+        'icon': Icons.delivery_dining_rounded,
+        'name': 'My orders',
+        'action': () {
+          Get.to(
+            () => My_orders(),
+            transition: Transition.rightToLeft,
+            duration: Duration(milliseconds: 300),
+          );
         }
       },
       {
